@@ -409,7 +409,7 @@ svg.call(zoom);
 
 // layout: horizontal collapsible tree
 let root = d3.hierarchy(DATA);
-root.x0 = height/2;
+root.x0 = height / 2;
 root.y0 = 40;
 const treeLayout = d3.tree().nodeSize([40, 200]);
 

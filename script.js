@@ -413,9 +413,22 @@ root.x0 = height / 2;
 root.y0 = 40;
 const treeLayout = d3.tree().nodeSize([40, 200]);
 
-// collapse all initially except top two levels
-root.children.forEach(c => collapse(c));
-update(root);
+// --- Collapse Function ---
+function collapse(d) {
+  if (d.children) {
+    d._children = d.children;
+    d._children.forEach(c => collapse(c));
+    d.children = null;
+  }
+}
+
+// --- Collapse All Initially ---
+if (root.children) {
+  root.children.forEach(c => collapse(c));  // collapse all top-level subtrees
+}
+
+update(root);  // now draw the collapsed view
+
 
 // default expansions
 function collapse(d){

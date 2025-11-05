@@ -70,3 +70,13 @@ html,body{height:100%;margin:0;background:var(--bg);color:#cfe7ff}
   .panel{order:2}
   #treeSvg{min-height:560px}
 }
+.node text {
+  fill: #e6f1ff !important;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+body {
+  color: #e6f1ff;
+  background-color: #0d1117;
+}

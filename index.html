@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Networking Mastery Tree Map — SACHIDAX</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body class="theme-dark">
+  <header class="topbar">
+    <div class="brand">
+      <img src="assets/logo.png" alt="logo" class="logo" />
+      <div class="titles">
+        <div class="title">SACHIDAX</div>
+        <div class="subtitle">Networking-Mastery-Map</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <input id="search" placeholder="Search topics / commands (Hinglish)..." />
+      <button id="toggleTheme">Toggle Theme</button>
+      <button id="expandAll">Expand All</button>
+      <button id="collapseAll">Collapse All</button>
+      <button id="exportJson">Export JSON</button>
+    </div>
+  </header>
+
+  <main class="main-grid">
+    <section id="treewrap" class="treewrap">
+      <svg id="treeSvg"></svg>
+      <div id="zoomHint" class="hint">Scroll to zoom, drag to pan</div>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-inner glass">
+        <h2 id="panelTitle">Select a node</h2>
+        <p id="panelShort" class="muted">Node details Hinglish main yahan dikhengi.</p>
+
+        <div class="panel-block">
+          <h3>Commands / Install</h3>
+          <pre id="panelInstall" class="code">—</pre>
+          <h3>Usage</h3>
+          <pre id="panelUsage" class="code">—</pre>
+        </div>
+
+        <div class="panel-block">
+          <h3>Real-world Use</h3>
+          <p id="panelUse">Select karo koi leaf node — yahan simple Hinglish examples milenge.</p>
+        </div>
+      </div>
+
+      <div class="explanations glass" id="explanations">
+        <h3>All Topics — Quick Hinglish Summaries</h3>
+        <div id="explainList" class="explainList"></div>
+      </div>
+
+      <div class="learnpath glass">
+        <h3>Learn Path</h3>
+        <div class="paths">
+          <div class="path" data-stage="Beginner">
+            <h4>Beginner</h4>
+            <ol id="pathBeginner"></ol>
+          </div>
+          <div class="path" data-stage="Intermediate">
+            <h4>Intermediate</h4>
+            <ol id="pathIntermediate"></ol>
+          </div>
+          <div class="path" data-stage="Advanced">
+            <h4>Advanced</h4>
+            <ol id="pathAdvanced"></ol>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer">© 2025 Networking Mastery | Open Source</footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

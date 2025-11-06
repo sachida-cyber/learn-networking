@@ -635,9 +635,9 @@ populatePath("pathBeginner", beginner);
 populatePath("pathIntermediate", intermediate);
 populatePath("pathAdvanced", advanced);
 
-// initial expand top-level
-root.children.forEach(c=>{ c.children = c._children || c.children; });
+// keep everything collapsed initially
 update(root);
+
 
 // accessibility: keyboard search enter focuses first match
 searchInput.addEventListener("keydown", (e)=>{

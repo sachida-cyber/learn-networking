@@ -179,6 +179,37 @@ const DATA_DEEP_DIVE = {
     }
   ]
 };
+{
+  "name": "Network Access & Media",
+  "type": "category",
+  "children": [
+    {
+      "name": "Network Media & Physical Layer",
+      "type": "topic",
+      "children": [
+        {"name": "UTP & Fiber Optic Cabling", "type": "detail"},
+        {"name": "PoE (Power over Ethernet)", "type": "detail"}
+      ]
+    },
+    {
+      "name": "Advanced Switching (L2)",
+      "type": "topic",
+      "children": [
+        {"name": "VLANs & Trunking (802.1Q)", "type": "protocol"},
+        {"name": "Spanning Tree Protocol (STP)", "type": "protocol"},
+        {"name": "MAC Address Table", "type": "detail"}
+      ]
+    },
+    {
+      "name": "ARP & DHCP",
+      "type": "topic",
+      "children": [
+        {"name": "ARP Process (L2 to L3 Mapping)", "type": "protocol"},
+        {"name": "DHCP DORA Process", "type": "protocol"}
+      ]
+    }
+  ]
+}
 
 
 // ---------------------------------------------------------------------------------------------------

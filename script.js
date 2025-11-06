@@ -1,9 +1,8 @@
-// Networking Mastery Tree Map - V3 Deep Explanations
+// Networking Mastery Tree Map - V3 Deep Explanations (Enhanced & Collapsed)
 // All content in Hinglish (simple Hindi-English mix)
 
 // ---------------------------------------------------------------------------------------------------
 // 1. DATA STRUCTURE (Multi-Level, Super Informative)
-// The primary data for the tree map visualization.
 // ---------------------------------------------------------------------------------------------------
 
 const DATA_DEEP_DIVE = {
@@ -11,6 +10,7 @@ const DATA_DEEP_DIVE = {
   "children": [
     {
       "name": "Networking Fundamentals & Models",
+      "type": "category",
       "children": [
         {
           "name": "OSI Reference Model (7 Layers)",
@@ -24,7 +24,7 @@ const DATA_DEEP_DIVE = {
               "type": "sub_topic",
               "details": "User interaction aur data format/encryption. **HTTP, SMTP, FTP (L7), JPEG, TLS/SSL (L6)**.",
               "children": [
-                {"name": "Layer 7 Protocols", "type": "detail", "usage": "Email, Web browsing, File transfer jaise services chalti hain.", "install": "HTTP, DNS, SMTP"},
+                {"name": "Layer 7 Protocols", "type": "protocol", "usage": "Email, Web browsing, File transfer jaise services chalti hain.", "install": "HTTP, DNS, SMTP"},
                 {"name": "Data Encryption/Decryption", "type": "detail", "usage": "Data ko secure format mein convert karna, Presentation Layer ka kaam.", "install": "SSL/TLS"}
               ]
             },
@@ -71,6 +71,7 @@ const DATA_DEEP_DIVE = {
 
     {
       "name": "Routing & WAN Technologies",
+      "type": "category",
       "children": [
         {
           "name": "Routing Protocols",
@@ -120,6 +121,7 @@ const DATA_DEEP_DIVE = {
 
     {
       "name": "Network Security & Monitoring",
+      "type": "category",
       "children": [
         {
           "name": "Firewalls and Security Controls",
@@ -178,14 +180,9 @@ const DATA_DEEP_DIVE = {
   ]
 };
 
-// NOTE: The 'DEEP_DATA_TOPIC' structure was defined but unused in the original script's D3 visualization logic.
-// It has been removed in this cleaned version to prevent confusion. If you wish to use it, you would need to
-// modify the 'root' hierarchy assignment.
-
 
 // ---------------------------------------------------------------------------------------------------
-// 2. D3.js LOGIC AND UTILITIES (Original logic maintained, optimized)
-// NOTE: This script assumes D3.js library is loaded and required HTML elements exist.
+// 2. D3.js LOGIC AND UTILITIES (Enhanced for color and depth)
 // ---------------------------------------------------------------------------------------------------
 
 let i = 0, duration = 750, root;
@@ -193,13 +190,24 @@ const margin = { top: 20, right: 100, bottom: 20, left: 100 };
 const width = 1200 - margin.right - margin.left;
 const height = 800 - margin.top - margin.bottom;
 
+// Define color scale for different node types
+function getColor(d) {
+    switch (d.data.type) {
+        case 'category': return '#a8dadc'; // Light Blue/Teal for Top Level
+        case 'topic': return '#457b9d';    // Medium Blue for Main Topics
+        case 'sub_topic': return '#1d3557'; // Dark Blue for Sub-Topics
+        case 'protocol': return '#e63946';  // Red for Protocols
+        case 'tool': return '#ffba08';      // Yellow/Orange for Tools
+        case 'detail': return '#f1faee';    // Off-White for specific details
+        default: return '#f1faee';
+    }
+}
+
+
 // Check for the D3 library and the necessary SVG element
 if (typeof d3 === 'undefined' || !document.getElementById("treeSvg")) {
     console.error("D3.js library not loaded or '#treeSvg' element not found. The visualization will not run.");
-    // Exit if dependencies are missing
-    // return; 
 }
-
 
 const svgElement = d3.select("#treeSvg");
 const svg = svgElement
@@ -225,19 +233,18 @@ root.y0 = 0;
 
 // Store all nodes in a flat list for searching
 const flatList = [];
+
+// *** FIX: Collapse all children initially to start at a single root node ***
 root.each(d => {
   flatList.push(d.data);
-  // Initially collapse all children below the top level
-  if (d.depth >= 1) {
+  if (d.children) {
     d._children = d.children; // Store children in _children
     d.children = null;       // Collapse them
   }
 });
-// Re-expand the top level
-if (root.children) {
-    root.children.forEach(c=>{ c.children = c._children || c.children; c._children = null;});
-}
 
+// Utility functions (showDetails, click, centerNode, toggleAll) remain the same as the previous version
+// ... (omitted for brevity, assume they are pasted here) ...
 
 // Utility function to show details in the right panel
 const panelTitle = document.getElementById('panelTitle');
@@ -325,21 +332,13 @@ function update(source) {
     .attr('class', 'node')
     .attr("id", d => `node-${d.id}`)
     .attr("transform", d => "translate(" + source.y0 + "," + source.x0 + ")")
-    .on('click', click)
-    .on('mouseover', (event, d) => {
-      d3.select(event.currentTarget).select('text').style('opacity', 1);
-    })
-    .on('mouseout', (event, d) => {
-      // Keep opacity high only if the node is a leaf (no children or collapsed children)
-      if (d.children || d._children) {
-        d3.select(event.currentTarget).select('text').style('opacity', 0.8);
-      }
-    });
+    .on('click', click);
 
   // Add Circle for the nodes
   nodeEnter.append('circle')
     .attr('r', 1e-6)
-    .style("fill", d => d._children ? "#4da6ff" : "#fff");
+    .style("fill", d => d._children ? getColor(d) : "#000") // Use custom color for collapsed
+    .style("stroke", d => getColor(d));                      // Use custom color for stroke
 
   // Add text for the nodes
   nodeEnter.append('text')
@@ -347,9 +346,9 @@ function update(source) {
     .attr("x", d => d.children || d._children ? -13 : 13)
     .attr("text-anchor", d => d.children || d._children ? "end" : "start")
     .text(d => d.data.name)
-    .style('fill', '#cfe7ff')
+    .style('fill', '#f1faee')
     .style('font-weight', '500')
-    .style('opacity', 1.0); // Always visible now
+    .style('opacity', 1.0);
 
   // Update the transition for nodes
   const nodeUpdate = nodeEnter.merge(node);
@@ -362,7 +361,9 @@ function update(source) {
   // Update the node attributes and style
   nodeUpdate.select('circle')
     .attr('r', 8)
-    .style("fill", d => d._children ? "#4da6ff" : "#071126")
+    // *** ENHANCEMENT: Use type-based color and adjust fill for better depth ***
+    .style("fill", d => d._children ? getColor(d) : "#000") 
+    .style("stroke", d => getColor(d))
     .attr('cursor', 'pointer');
 
   // Transition exiting nodes to the parent's new position
@@ -385,6 +386,8 @@ function update(source) {
   const linkEnter = link.enter().insert('path', "g")
     .attr("class", "link")
     .attr("id", d => `link-${d.id}`)
+    // *** ENHANCEMENT: Opacity based on depth for visual hierarchy ***
+    .style("stroke-opacity", d => 1 / (d.depth + 1))
     .attr('d', d => {
       const o = { x: source.x0, y: source.y0 };
       return diagonal(o, o);
@@ -423,7 +426,7 @@ function update(source) {
 }
 
 // ---------------------------------------------------------------------------------------------------
-// 3. UI AND EVENT HANDLERS
+// 3. UI AND EVENT HANDLERS (No significant change, ensuring element checks)
 // ---------------------------------------------------------------------------------------------------
 
 const searchInput = document.getElementById('search');
@@ -496,16 +499,13 @@ if (document.getElementById('expandAll')) {
 
 if (document.getElementById('collapseAll')) {
     document.getElementById('collapseAll').addEventListener('click', () => {
+      // *** FIX: Collapse all nodes except the root ***
       root.each(d => {
-        if (d.depth > 0 && d.children) {
+        if (d.depth >= 1 && d.children) { // Only collapse nodes deeper than the root
           d._children = d.children;
           d.children = null;
         }
       });
-      // Keep the first level expanded
-      if (root.children) {
-        root.children.forEach(c => { c.children = c._children || c.children; c._children = null; });
-      }
       update(root);
       centerNode(root);
     });
@@ -519,7 +519,7 @@ if (document.getElementById('toggleTheme')) {
     });
 }
 
-// Export JSON (for the user's convenience)
+// Export JSON
 if (document.getElementById('exportJson')) {
     document.getElementById('exportJson').addEventListener('click', () => {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(DATA_DEEP_DIVE, null, 2));
@@ -532,9 +532,8 @@ if (document.getElementById('exportJson')) {
     });
 }
 
-
 // ---------------------------------------------------------------------------------------------------
-// 4. LEARN PATH AND EXPLANATION LIST
+// 4. LEARN PATH AND EXPLANATION LIST (No change)
 // ---------------------------------------------------------------------------------------------------
 
 // Mock Learn Paths based on the deep structure
@@ -641,10 +640,7 @@ populateExplanationList(DATA_DEEP_DIVE);
 // 5. INITIALIZATION
 // ---------------------------------------------------------------------------------------------------
 
-// initial expand top-level
-if (root.children) {
-    root.children.forEach(c => { c.children = c._children || c.children; c._children = null; });
-}
+// *** FIX: Start fully collapsed by only calling update on the root ***
 update(root);
 
 // accessibility: keyboard search enter focuses first match
@@ -670,6 +666,7 @@ if (searchInput) {
 setTimeout(() => {
   // zoom to show central area
   if (svgElement) {
+    // Zoom/Pan slightly to the right to better position the root node
     svgElement.call(zoom.transform, d3.zoomIdentity.translate(80, 20).scale(1));
   }
 }, 150);
@@ -682,5 +679,15 @@ style.innerHTML = `
 .explainList .item.active{background:linear-gradient(90deg, rgba(77,166,255,0.06), transparent)}
 .node circle{filter: drop-shadow(0 6px 12px rgba(77,166,255,0.06));}
 .node:hover circle{stroke-width:2.6px;filter: drop-shadow(0 10px 20px rgba(77,166,255,0.16));}
+/* *** NEW STYLE FOR LINK DEPTH *** */
+.link {
+    fill: none;
+    stroke: #457b9d; /* Base link color (Matches a primary topic color) */
+    stroke-width: 1.5px;
+}
+.link.highlight {
+    stroke: #e63946; /* Highlight color (Matches Protocol/Important node) */
+    stroke-width: 2.5px;
+}
 `;
 document.head.appendChild(style);
